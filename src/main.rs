@@ -27,8 +27,8 @@ fn main() -> () {
         }
         let gcprop = (gcount + ccount) as f64 / allcount as f64;
         println!(
-            "Number of Gs: {}, number of Cs: {}, total number:{}, proportion of gc:{}",
-            gcount, ccount, allcount, gcprop
+            "Number of Gs\tNumber of Cs\tTotal number\tProportion of GC\n{gcount}\t{ccount}\t{allcount}\t{gcprop}"
         )
+
     }
 }
