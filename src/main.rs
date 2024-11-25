@@ -10,18 +10,18 @@ fn main() -> () {
         Ok(val) => val,
         Err(_e) => panic!("could not read fasta file"),
     };
-    let mut gcount = 0;
-    let mut ccount = 0;
-    let mut allcount = 0;
+    let mut gcount = 0i64;
+    let mut ccount = 0i64;
+    let mut allcount = 0i64;
     for result in sh.records() {
         let record = result.unwrap();
         let sequence = record.seq();
         for letter in sequence {
             if letter == &71u8 {
-                gcount += 1
+                gcount += 1;
             }
             if letter == &67u8 {
-                ccount += 1
+                ccount += 1;
             }
             allcount += 1;
         }
