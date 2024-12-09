@@ -29,7 +29,7 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-fn gccalculator(sh: Reader<BufReader<File>>) -> Result<(i64, i64, i64, f64)> {
+fn gccalculator<R: std::io::Read>(sh: Reader<BufReader<R>>) -> Result<(i64, i64, i64, f64)> {
     let mut gcount = 0i64;
     let mut ccount = 0i64;
     let mut allcount = 0i64;
@@ -52,11 +52,23 @@ fn gccalculator(sh: Reader<BufReader<File>>) -> Result<(i64, i64, i64, f64)> {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
 
-    const DATA: &str = "GGGCCCGGGCC";
+    const DATA: &str = ">test\nGGGCCCGGGCCC";
+
+    fn create_data(d: &str) -> Reader<BufReader<&[u8]>> {
+        let data = d.as_bytes();
+        fasta::Reader::new(data)
+    }
 
     #[test]
-    fn test_gc() {
-        // logic
+    fn test_gc() { 
+        let reader = create_data(DATA);
+        let (gcount, ccount, allcount, gcprop) = gccalculator(reader).unwrap();
+        
+        assert_eq!(gcount, 6);
+        assert_eq!(ccount, 6);
+        assert_eq!(allcount, 12);
+        assert_eq!(gcprop, 1.0);
     }
 }
