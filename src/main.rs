@@ -55,15 +55,14 @@ mod tests {
 
     const DATA: &str = ">test\nGGGCCCGGGCCC";
 
-
     #[test]
     fn test_gc() {
-        //let reader = create_data(DATA);
-        //let (gcount, ccount, allcount, gcprop) = gccalculator(reader).unwrap();
+        let reader = needletail::parse_fastx_reader(DATA.as_bytes()).unwrap();
+        let (gcount, ccount, allcount, gcprop) = gccalculator(reader).unwrap();
 
-        // assert_eq!(gcount, 6);
-        // assert_eq!(ccount, 6);
-        // assert_eq!(allcount, 12);
-        // assert_eq!(gcprop, 1.0);
+        assert_eq!(gcount, 6);
+        assert_eq!(ccount, 6);
+        assert_eq!(allcount, 12);
+        assert_eq!(gcprop, 1.0);
     }
 }
