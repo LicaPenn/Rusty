@@ -13,19 +13,67 @@ fn main() -> Result<()> {
             .required(true)
             .value_parser(value_parser!(PathBuf)),
         )
+        .arg(
+            arg!(
+                -w --window [Value] "Seperates file into windows and counts per window"
+            )
+            .value_parser(value_parser!(i32)),
+        )
         .get_matches();
 
     let path_to_file = matches.get_one::<PathBuf>("FILE").unwrap();
 
+    let window = matches.get_one::<i32>("window");
+
     let sh = parse_fastx_file(path_to_file).context("Did you spell the path name correctly?")?;
 
-    let (gcount, ccount, allcount, gcprop) = gccalculator(sh)?;
+    match window {
+        Some(w) => {
+            windows(sh, *w)?;
+        }
+        None => {
+            let (gcount, ccount, allcount, gcprop) = gccalculator(sh)?;
 
-    println!(
-            "Number of Gs\tNumber of Cs\tTotal number\tProportion of GC\n{gcount}\t{ccount}\t{allcount}\t{gcprop}"
-        );
+            println!(
+                "Number of Gs\tNumber of Cs\tTotal number\tProportion of GC\n{gcount}\t{ccount}\t{allcount}\t{gcprop}"
+            );
+        }
+    }
 
     Ok(())
+}
+
+fn windows(mut sh: Box<dyn FastxReader>, w: i32) -> Result<()> {
+    while let Some(record) = sh.next() {
+        let record = record?;
+        let sequence = record.sequence();
+        let mut iter = sequence.chunks(w as usize);
+
+        for chunk in iter {
+            let (gcount, ccount, allcount, gcprop) = gcinner(chunk);
+            println!("GC Percentage {}", gcprop);
+        }
+    }
+
+    Ok(())
+}
+
+fn gcinner(sequence: &[u8]) -> (i64, i64, i64, f64) {
+    let mut gcount = 0i64;
+    let mut ccount = 0i64;
+    let mut allcount = 0i64;
+
+    for letter in sequence {
+        if letter == &71u8 {
+            gcount += 1;
+        }
+        if letter == &67u8 {
+            ccount += 1;
+        }
+        allcount += 1;
+    }
+    let gcprop = (gcount + ccount) as f64 / allcount as f64;
+    (gcount, ccount, allcount, gcprop)
 }
 
 fn gccalculator(mut sh: Box<dyn FastxReader>) -> Result<(i64, i64, i64, f64)> {
