@@ -47,10 +47,10 @@ fn windows(mut sh: Box<dyn FastxReader>, w: i32) -> Result<()> {
     while let Some(record) = sh.next() {
         let record = record?;
         let sequence = record.sequence();
-        let mut iter = sequence.chunks(w as usize);
+        let iter = sequence.chunks(w as usize);
 
         for chunk in iter {
-            let (gcount, ccount, allcount, gcprop) = gcinner(chunk);
+            let (_gcount, _ccount, _allcount, gcprop) = gcinner(chunk);
             println!("GC Percentage {}", gcprop);
         }
     }
