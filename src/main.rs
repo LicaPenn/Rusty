@@ -46,12 +46,21 @@ fn main() -> Result<()> {
 fn windows(mut sh: Box<dyn FastxReader>, w: i32) -> Result<()> {
     while let Some(record) = sh.next() {
         let record = record?;
+        let id = std::str::from_utf8(record.id()).unwrap();
         let sequence = record.sequence();
-        let iter = sequence.chunks(w as usize);
+        let mut iter = sequence.chunks(w as usize);
 
-        for chunk in iter {
-            let (_gcount, _ccount, _allcount, gcprop) = gcinner(chunk);
-            println!("GC Percentage {}", gcprop);
+        let mut window_index = 0;
+        let mut window_end = w;
+
+        while let Some(chunk) = iter.next() {
+            if window_end > sequence.len() as i32 {
+                window_end = sequence.len() as i32;
+            }
+            let (gcount, ccount, allcount, gcprop) = gcinner(chunk);
+            println!("{}\t{}\t{}\t{}\t{}\t{}\t{}", window_index, window_end, id, gcprop, gcount, ccount, allcount);
+            window_index += w;
+            window_end += w;
         }
     }
 
