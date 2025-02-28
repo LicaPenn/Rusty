@@ -29,6 +29,7 @@ fn main() -> Result<()> {
 
     match window {
         Some(w) => {
+
             windows(sh, *w)?;
         }
         None => {
@@ -44,6 +45,9 @@ fn main() -> Result<()> {
 }
 
 fn windows(mut sh: Box<dyn FastxReader>, w: i32) -> Result<()> {
+    println!(
+        "start\tend\tid\tgcprop\tgcount\tccount\tallcount"
+    );
     while let Some(record) = sh.next() {
         let record = record?;
         let id = std::str::from_utf8(record.id()).unwrap();
