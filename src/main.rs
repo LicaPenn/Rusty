@@ -93,12 +93,15 @@ fn gccalculator(mut sh: Box<dyn FastxReader>) -> Result<(i64, i64, i64, f64)> {
         let record = record?;
         let sequence = record.sequence();
         for letter in sequence {
-            if letter == &71u8 {
+            //Gs
+            if letter == &71u8 || letter == &103u8 {
                 gcount += 1;
             }
-            if letter == &67u8 {
+            //Cs
+            if letter == &67u8 || letter == &99u8 {
                 ccount += 1;
             }
+
             allcount += 1;
         }
     }
@@ -120,6 +123,18 @@ mod tests {
         assert_eq!(gcount, 6);
         assert_eq!(ccount, 6);
         assert_eq!(allcount, 12);
+        assert_eq!(gcprop, 1.0);
+    }
+
+    const DATA2: &str = ">test\nGGGCCCGGGCCCcccgggcccggg";
+    #[test]
+    fn test_smallgc() {
+        let reader = needletail::parse_fastx_reader(DATA2.as_bytes()).unwrap();
+        let (gcount, ccount, allcount, gcprop) = gccalculator(reader).unwrap();
+
+        assert_eq!(gcount, 12);
+        assert_eq!(ccount, 12);
+        assert_eq!(allcount, 24);
         assert_eq!(gcprop, 1.0);
     }
 }
