@@ -58,7 +58,7 @@ fn windows(mut sh: Box<dyn FastxReader>, w: i32) -> Result<()> {
                 window_end = sequence.len() as i32;
             }
             let (gcount, ccount, allcount, gcprop) = gcinner(chunk);
-            println!("{}\t{}\t{}\t{}\t{}\t{}\t{}", window_index, window_end, id, gcprop, gcount, ccount, allcount);
+            println!("{}\t{}\t{}\t{:.2}\t{}\t{}\t{}", window_index, window_end, id, gcprop, gcount, ccount, allcount);
             window_index += w;
             window_end += w;
         }
